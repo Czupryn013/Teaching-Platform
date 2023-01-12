@@ -1,6 +1,6 @@
-import yaml
 import logging
 
+import yaml
 import jsonpickle
 from password_strength import PasswordPolicy
 from werkzeug.security import generate_password_hash
