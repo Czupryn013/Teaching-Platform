@@ -1,11 +1,22 @@
 from flask import Blueprint
 from flask import request
 
+from extensions import auth
 import db_handler
 import exceptions
 
 
 controller_bp = Blueprint("controller_bp", __name__)
+
+
+@auth.verify_password
+def verify_password(username, password):
+    try:
+        user = db_handler.check_auth(username, password)
+    except exceptions.AuthError:
+        return None
+
+    return user
 
 
 @controller_bp.route("/users", methods=["POST"])
@@ -29,11 +40,14 @@ def remove_user(id_to_delete):
         return e.message, e.status
 
 @controller_bp.route("/users", methods=["GET"])
+@auth.login_required()
 def see_all_users():
     return db_handler.see_all_users(), 200
 
-@controller_bp.route("/users/<user_id>", methods=["GET"])
-def see_user_data(user_id):
+@controller_bp.route("/users/me", methods=["GET"])
+@auth.login_required()
+def see_user_data():
+    user_id = auth.current_user().id
     try:
         results = db_handler.see_user_data(user_id)
         return results, 200

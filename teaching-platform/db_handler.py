@@ -3,7 +3,7 @@ import logging
 import yaml
 import jsonpickle
 from password_strength import PasswordPolicy
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 import exceptions
 from models import User, CensuredUser, Role
@@ -66,8 +66,8 @@ def see_user_data(user_id):
 def check_auth(username, password):
     user = User.query.filter_by(username=username).first()
 
-    if not user or not user.password == password: raise exceptions.AuthError()
+    if user and check_password_hash(user.password, password): return user
 
-    return True
+    raise exceptions.AuthError()
 
 
