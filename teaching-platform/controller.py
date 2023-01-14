@@ -2,6 +2,7 @@ from flask import Blueprint
 from flask import request
 
 from extensions import auth
+from models import Role
 import db_handler
 import exceptions
 
@@ -15,8 +16,11 @@ def verify_password(username, password):
         user = db_handler.check_auth(username, password)
     except exceptions.AuthError:
         return None
-
     return user
+
+@auth.get_user_roles
+def get_user_roles(user):
+    return user.role
 
 
 @controller_bp.route("/users", methods=["POST"])
@@ -40,7 +44,7 @@ def remove_user(id_to_delete):
         return e.message, e.status
 
 @controller_bp.route("/users", methods=["GET"])
-@auth.login_required()
+@auth.login_required(role=Role.ADMIN.__str__())
 def see_all_users():
     return db_handler.see_all_users(), 200
 

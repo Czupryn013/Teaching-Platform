@@ -27,7 +27,7 @@ def add_user(username, password):
 
     encoded_password = generate_password_hash(password, method="sha256")
 
-    user = User(username=username, password=encoded_password, role=Role.STUDENT.__str__())
+    user = User(username=username, password=encoded_password, role=Role.STUDENT)
 
     results = User.query.filter_by(username=username).all()
     if results: raise exceptions.UsernameTakenError()

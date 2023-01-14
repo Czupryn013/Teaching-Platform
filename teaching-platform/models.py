@@ -14,6 +14,7 @@ class User(db.Model):
         return f"User(id: {self.id}, username: {self.username}, role: {self.role})"
 
 
+#this model is needed for showing only public data not personal informations like password, for exaple in see_all_users()
 class CensuredUser:
     def __init__(self, id, username, role):
         self.id = id
