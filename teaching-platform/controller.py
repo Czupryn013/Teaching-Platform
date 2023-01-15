@@ -44,7 +44,7 @@ def remove_user(id_to_delete):
         return e.message, e.status
 
 @controller_bp.route("/users", methods=["GET"])
-@auth.login_required(role=Role.ADMIN.__str__())
+@auth.login_required(role=Role.ADMIN.value)
 def see_all_users():
     return db_handler.see_all_users(), 200
 

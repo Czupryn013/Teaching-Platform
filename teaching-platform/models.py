@@ -21,10 +21,11 @@ class CensuredUser:
         self.username = username
         self.role = role
 
+#STUDENT, TEACHER, ADMIN
 class Role(Enum):
-    STUDENT = 0
-    TEACHER = 1
-    ADMIN = 2
+    STUDENT = "STUDENT"
+    TEACHER = "TEACHER"
+    ADMIN = "ADMIN"
 
     def __str__(self):
         return str(self.name)
