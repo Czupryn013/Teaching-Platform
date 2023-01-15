@@ -36,6 +36,7 @@ def add_user():
         return e.message, e.status
 
 @controller_bp.route("/users/<id_to_delete>", methods=["DELETE"])
+@auth.login_required(role=Role.ADMIN.value)
 def remove_user(id_to_delete):
     try:
         db_handler.remove_user(id_to_delete)

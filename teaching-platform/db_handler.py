@@ -13,7 +13,7 @@ from extensions import db
 with open("../config.yaml", "r") as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
 
-policy = PasswordPolicy.from_names(length=5,uppercase=1, numbers=2,special=1, nonletters=2,)
+policy = PasswordPolicy.from_names(length=5,uppercase=1, numbers=2,special=1, nonletters=2)
 
 logging.basicConfig(level=logging.INFO,filemode="w", filename="../logs.log")
 jsonpickle.set_preferred_backend('json')
