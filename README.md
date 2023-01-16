@@ -24,6 +24,11 @@ After that you are almost ready to go, just run `main.py`.
 cd teaching-platform
 python3 main.py / python main.py
 ```
+App runs on `http://127.0.0.1:5000` by default, to change it set attribute
+`port` im `main.py` to the desired one in line `23`.
+```python
+app.run(port=5000)
+```
 
 ## Api usage
 
