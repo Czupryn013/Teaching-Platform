@@ -28,4 +28,4 @@ class Role(Enum):
     ADMIN = "ADMIN"
 
     def __str__(self):
-        return str(self.name)
+        return str(self.value)

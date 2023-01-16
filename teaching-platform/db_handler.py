@@ -23,7 +23,7 @@ def add_user(username, password):
     test = policy.test(password)
 
     if test: raise exceptions.PasswordToWeakError(f"Password breaks the following rules {test}.")
-    if not username or " " in username: raise exceptions.IncorrectUsername()
+    if not username or " " in username or len(username) > 89: raise exceptions.IncorrectUsername()
 
     encoded_password = generate_password_hash(password, method="sha256")
 

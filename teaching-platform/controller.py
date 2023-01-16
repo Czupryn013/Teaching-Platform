@@ -25,15 +25,17 @@ def get_user_roles(user):
 
 @controller_bp.route("/users", methods=["POST"])
 def add_user():
-    try:
-        request_data = request.get_json()
-        username, password = request_data.get("username"), request_data.get("password")
+    request_data = request.get_json()
+    username, password = request_data.get("username"), request_data.get("password")
 
-        if not username or not password: return "Incorrect json body", 400
+    if not username or not password: return "Incorrect json body", 400
+
+    try:
         db_handler.add_user(username, password)
-        return f"User {username} has been added sucessfuly.", 201
     except (exceptions.UsernameTakenError,exceptions.PasswordToWeakError,exceptions.IncorrectUsername) as e:
         return e.message, e.status
+
+    return f"User {username} has been added sucessfuly.", 201
 
 @controller_bp.route("/users/<id_to_delete>", methods=["DELETE"])
 @auth.login_required(role=Role.ADMIN.value)

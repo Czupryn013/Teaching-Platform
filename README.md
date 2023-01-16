@@ -1,12 +1,14 @@
 # Teaching Platform - Database Controller
-This part of Teaching-Platfrom project is responsible for managing database operations.
+This part of Teaching-Platfrom project is responsible for
+managing database operations.
 
 ## Setup (Linux / Windows)
-After pulling the code onto your machine, put your postgresql password in `config.yaml`. Then start by creating a `Python Virtual Enviroment`.
+After pulling the code onto your machine, start by puting your database 
+credentials in [config.yaml](https://github.com/Czupryn013/Teaching-Platform/blob/develop/config.yaml). Then create a `Python Virtual Enviroment`.
 
 ```bash
 python3 -m venv ".env"
-source ".env/bin/activate" / ".env/Scripts/activate"
+source ".env/bin/activate" / source ".env/Scripts/activate"
 ```
 
 
@@ -24,10 +26,10 @@ python3 main.py / python main.py
 ## Api usage
 
 ### Endpoints
-* /users **[GET]**
-* /users/me **[GET]**
-* /users/remove<user_id> **[DELETE]**
-* /users **[POST]**
+* `/users`  - **[GET]**
+* `/users/me` - **[GET]**
+* `/users/remove<user_id>` - **[DELETE]**
+* `/users` - **[POST]**
 
 ### Endpoint requirments
 * **[GET]** `/users` - Requires sender to pass
