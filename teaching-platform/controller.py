@@ -22,7 +22,6 @@ def verify_password(username, password):
 def get_user_roles(user):
     return user.role
 
-
 @controller_bp.route("/users", methods=["POST"])
 def add_user():
     request_data = request.get_json()
@@ -47,7 +46,7 @@ def remove_user(id_to_delete):
         return e.message, e.status
 
 @controller_bp.route("/users", methods=["GET"])
-@auth.login_required(role=Role.ADMIN.value)
+@auth.login_required()
 def see_all_users():
     return db_handler.see_all_users(), 200
 

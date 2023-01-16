@@ -3,8 +3,10 @@ This part of Teaching-Platfrom project is responsible for
 managing database operations.
 
 ## Setup (Linux / Windows)
-After pulling the code onto your machine, start by puting your database 
-credentials in [config.yaml](https://github.com/Czupryn013/Teaching-Platform/blob/develop/config.yaml). Then create a `Python Virtual Enviroment`.
+After pulling the code onto your machine, start  off by creating a
+`postgresql` database and puting it's credentials in 
+[config.yaml](https://github.com/Czupryn013/Teaching-Platform/blob/develop/config.yaml). 
+Then create a `Python Virtual Enviroment`.
 
 ```bash
 python3 -m venv ".env"
