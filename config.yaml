@@ -1,6 +1,0 @@
-database:
-  host: "DATABASE HOSTNAME"
-  user: "OWNER'S USARNAME (usually postgres)"
-  dbname: "DATABASE NAME"
-  port: PORT (as and inteager)
-  password: "DATABASE PASSWORD"
