@@ -1,8 +1,7 @@
-from flask import Blueprint
-from flask import request
+from flask import Blueprint, request
 
 from extensions import auth
-from models import Role
+from models import Role, get_all_roles
 import db_handler
 import exceptions
 
@@ -59,5 +58,44 @@ def see_user_data():
         return results, 200
     except exceptions.UserDosentExistError as e:
         return e.message, e.status
+
+@controller_bp.route("/users/me", methods=["PATCH"])
+@auth.login_required()
+def update_my_info():
+    request_data = request.get_json()
+    current_id = auth.current_user().id
+    username, password = request_data.get("username"), request_data.get("password")
+    if not username and not password: return "Incorrect json body", 400
+
+    if username:
+        try:
+            db_handler.update_username(username, current_id)
+        except exceptions.UserDosentExistError as e:
+            return e.message, e.status
+    elif password:
+        try:
+            db_handler.update_password(password, current_id)
+        except (exceptions.UserDosentExistError, exceptions.PasswordToWeakError) as e:
+            return e.message, e.status
+
+    return "Patched sucesfully!", 200
+
+
+@controller_bp.route("/update/<user_id>", methods=["PATCH"])
+@auth.login_required(role=Role.ADMIN.value)
+def change_user_role(user_id):
+    request_data = request.get_json()
+    role = request_data.get("role")
+    if not role: return "Incorrect json body", 400
+    elif role not in get_all_roles(): return "Incorrect role value.", 400
+
+    try:
+        db_handler.update_role(role, user_id)
+    except exceptions.UserDosentExistError as e:
+        return e.message, e.status
+
+    return f"Role of user with id {user_id} changed to {role} sucesfully!"
+
+
 
 

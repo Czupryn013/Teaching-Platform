@@ -70,4 +70,31 @@ def check_auth(username, password):
 
     raise exceptions.AuthError()
 
+def update_username(username, id):
+    user = User.query.filter_by(id=id).first()
+    if not user: raise exceptions.UserDosentExistError()
+
+    user.username = username
+    db.session.commit()
+
+def update_role(role, id):
+    user = User.query.filter_by(id=id).first()
+    if not user: raise exceptions.UserDosentExistError()
+
+    user.role = role
+    db.session.commit()
+
+def update_password(password, id):
+    user = User.query.filter_by(id=id).first()
+    if not user: raise exceptions.UserDosentExistError()
+
+    test = policy.test(password)
+
+    if test: raise exceptions.PasswordToWeakError(f"Password breaks the following rules {test}.")
+
+    encoded_password = generate_password_hash(password, method="sha256")
+
+    user.password = encoded_password
+    db.session.commit()
+
 

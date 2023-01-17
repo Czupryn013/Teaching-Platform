@@ -22,6 +22,10 @@ class CensuredUser:
         self.role = role
 
 #STUDENT, TEACHER, ADMIN
+def get_all_roles():
+    return ["STUDENT", "TEACHER", "ADMIN"]
+
+
 class Role(Enum):
     STUDENT = "STUDENT"
     TEACHER = "TEACHER"
@@ -29,3 +33,4 @@ class Role(Enum):
 
     def __str__(self):
         return str(self.value)
+
