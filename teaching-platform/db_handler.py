@@ -2,30 +2,24 @@ import logging
 
 import yaml
 import jsonpickle
-from password_strength import PasswordPolicy
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash
 
 import exceptions
 from models import User, CensuredUser, Role
 from extensions import db
+import validation
 
 
 with open("../config.yaml", "r") as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
 
-policy = PasswordPolicy.from_names(length=5,uppercase=1, numbers=2,special=1, nonletters=2)
-
-logging.basicConfig(level=logging.INFO,filemode="w", filename="../logs.log")
+logging.basicConfig(level=logging.INFO, filemode="w", filename="../logs.log")
 jsonpickle.set_preferred_backend('json')
 jsonpickle.set_encoder_options('json', ensure_ascii=False)
 
 def add_user(username, password):
-    test = policy.test(password)
-
-    if test: raise exceptions.PasswordToWeakError(f"Password breaks the following rules {test}.")
-    if not username or " " in username or len(username) > 89: raise exceptions.IncorrectUsername()
-
-    encoded_password = generate_password_hash(password, method="sha256")
+    username = validation.validate_username(username)
+    encoded_password = validation.validate_password(password)
 
     user = User(username=username, password=encoded_password, role=Role.STUDENT.value)
 
@@ -38,18 +32,21 @@ def add_user(username, password):
     logging.info(f"User {username} added")
 
 def remove_user(id_to_delete):
-    results = User.query.filter_by(id=id_to_delete).first()
+    query = User.query.filter_by(id=id_to_delete)
+    user = query.first()
 
-    if not results: raise exceptions.UserDosentExistError()
+    if not user: raise exceptions.UserDosentExistError()
 
-    User.query.filter_by(id=id_to_delete).delete()
+    query.delete()
     db.session.commit()
 
     logging.info(f"User with id {id_to_delete} has been removed sucessfuly.")
 
 def see_all_users():
     results = User.query.all()
+
     users = []
+
     for user in results: users.append(CensuredUser(user.id, user.username, user.role))
 
     return jsonpickle.encode(users, unpicklable=False)
@@ -74,6 +71,8 @@ def update_username(username, id):
     user = User.query.filter_by(id=id).first()
     if not user: raise exceptions.UserDosentExistError()
 
+    username = validation.validate_username(username)
+
     user.username = username
     db.session.commit()
 
@@ -88,11 +87,7 @@ def update_password(password, id):
     user = User.query.filter_by(id=id).first()
     if not user: raise exceptions.UserDosentExistError()
 
-    test = policy.test(password)
-
-    if test: raise exceptions.PasswordToWeakError(f"Password breaks the following rules {test}.")
-
-    encoded_password = generate_password_hash(password, method="sha256")
+    encoded_password = validation.validate_password(password)
 
     user.password = encoded_password
     db.session.commit()

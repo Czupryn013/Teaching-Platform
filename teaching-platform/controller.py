@@ -30,7 +30,7 @@ def add_user():
 
     try:
         db_handler.add_user(username, password)
-    except (exceptions.UsernameTakenError,exceptions.PasswordToWeakError,exceptions.IncorrectUsername) as e:
+    except (exceptions.UsernameTakenError, exceptions.PasswordToWeakError, exceptions.IncorrectUsername) as e:
         return e.message, e.status
 
     return f"User {username} has been added sucessfuly.", 201
