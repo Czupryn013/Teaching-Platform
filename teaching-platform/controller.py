@@ -36,7 +36,7 @@ def add_user():
     return f"User {username} has been added sucessfuly.", 201
 
 @controller_bp.route("/users/<id_to_delete>", methods=["DELETE"])
-@auth.login_required(role=Role.ADMIN.value)
+@auth.login_required(role=Role.ADMIN)
 def remove_user(id_to_delete):
     try:
         db_handler.remove_user(id_to_delete)
@@ -82,7 +82,7 @@ def update_my_info():
 
 
 @controller_bp.route("/update/<user_id>", methods=["PATCH"])
-@auth.login_required(role=Role.ADMIN.value)
+@auth.login_required(role=Role.ADMIN)
 def change_user_role(user_id):
     request_data = request.get_json()
     role = request_data.get("role")

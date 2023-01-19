@@ -21,7 +21,7 @@ def add_user(username, password):
     username = validation.validate_username(username)
     encoded_password = validation.validate_password(password)
 
-    user = User(username=username, password=encoded_password, role=Role.STUDENT.value)
+    user = User(username=username, password=encoded_password, role=Role.STUDENT)
 
     results = User.query.filter_by(username=username).all()
     if results: raise exceptions.UsernameTakenError()
