@@ -29,7 +29,6 @@ class CensuredUser:
         self.username = username
         self.role = role
 
-#STUDENT, TEACHER, ADMIN
 def get_all_roles():
     return [role.value for role in Role]
 

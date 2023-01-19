@@ -30,7 +30,7 @@ def add_user():
 
     try:
         db_handler.add_user(username, password)
-    except (exceptions.UsernameTakenError, exceptions.PasswordToWeakError, exceptions.IncorrectUsername) as e:
+    except exceptions.UserCredentialsError as e:
         return e.message, e.status
 
     return f"User {username} has been added sucessfuly.", 201
@@ -75,7 +75,7 @@ def update_my_info():
     elif password:
         try:
             db_handler.update_password(password, current_id)
-        except (exceptions.UserDosentExistError, exceptions.PasswordToWeakError) as e:
+        except (exceptions.UserDosentExistError, exceptions.UserCredentialsError) as e:
             return e.message, e.status
 
     return "Patched sucesfully!", 200

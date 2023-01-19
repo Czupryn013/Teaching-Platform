@@ -47,7 +47,7 @@ def see_all_users():
 
     users = []
 
-    for user in results: users.append(CensuredUser(user.id, user.username, user.role))
+    for user in results: users.append(CensuredUser(user.id, user.username, user.role.name))
 
     return jsonpickle.encode(users, unpicklable=False)
 
