@@ -35,6 +35,7 @@ app.run(port=5000)
 ### Endpoints
 * `/users`  - **[GET]**
 * `/users/me` - **[GET]**
+* `/users/<user_id>` - **[GET]**
 * `/users/remove<user_id>` - **[DELETE]**
 * `/users` - **[POST]**
 
@@ -43,6 +44,9 @@ app.run(port=5000)
 valid authorization to an account with `ADMIN` role.
 * **[GET]** `/users/me` - Requires sender to pass valid 
 authorization to an account in order to recive it's information.
+* **[GET]** `/users/me` - Requires sender to pass valid 
+authorization to an account with `ADMIN` role in order to recive 
+information of user with `<user_id>`.
 * **[PATCH]** `/users/me` - Requires sender to pass both valid 
 authorization to an account and valid body in order to update username 
 or password. To update password pass `password` atribute in body, to 

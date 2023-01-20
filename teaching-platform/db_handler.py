@@ -3,8 +3,6 @@ import logging
 import yaml
 import jsonpickle
 from werkzeug.security import check_password_hash
-from sqlalchemy.orm import load_only
-from flask.json import jsonify
 
 import exceptions
 from models import User, Role
