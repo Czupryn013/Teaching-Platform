@@ -3,9 +3,11 @@ import logging
 import yaml
 import jsonpickle
 from werkzeug.security import check_password_hash
+from sqlalchemy.orm import load_only
+from flask.json import jsonify
 
 import exceptions
-from models import User, CensuredUser, Role
+from models import User, Role
 from extensions import db
 import validation
 
@@ -44,21 +46,19 @@ def remove_user(id_to_delete):
 
 def see_all_users():
     results = User.query.all()
-
     users = []
+    for user in results: users.append(user.get_censured_json())
 
-    for user in results: users.append(CensuredUser(user.id, user.username, user.role.name))
+    return users
 
-    return jsonpickle.encode(users, unpicklable=False)
 
 def see_user_data(user_id):
-    results = User.query.filter_by(id=user_id).first()
+    user = User.query.filter_by(id=user_id).first()
 
-    if not results: raise exceptions.UserDosentExistError()
+    if not user: raise exceptions.UserDosentExistError()
 
-    user = CensuredUser(results.id, results.username, results.role)
 
-    return jsonpickle.encode(user, unpicklable=False)
+    return user.get_censured_json()
 
 def check_auth(username, password):
     user = User.query.filter_by(username=username).first()

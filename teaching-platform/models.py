@@ -21,13 +21,12 @@ class User(db.Model):
     def __repr__(self):
         return f"User(id: {self.id}, username: {self.username}, role: {self.role})"
 
+    def get_censured_json(self):
+        return {"id": self.id, "username": self.username, "role": self.role.name}
 
-#this model is needed for showing only public data not personal information like password, for example in see_all_users()
-class CensuredUser:
-    def __init__(self, id, username, role):
-        self.id = id
-        self.username = username
-        self.role = role
+    def get_json(self):
+        return {"id": self.id, "username": self.username, "password": self.password, "role": self.role.name}
+
 
 def get_all_roles():
     return [role.value for role in Role]

@@ -49,9 +49,18 @@ def remove_user(id_to_delete):
 def see_all_users():
     return db_handler.see_all_users(), 200
 
+@controller_bp.route("/users/<id>", methods=["GET"])
+@auth.login_required(role=Role.ADMIN)
+def see_user_data(id):
+    try:
+        results = db_handler.see_user_data(id)
+        return results, 200
+    except exceptions.UserDosentExistError as e:
+        return e.message, e.status
+
 @controller_bp.route("/users/me", methods=["GET"])
 @auth.login_required()
-def see_user_data():
+def see_my_data():
     user_id = auth.current_user().id
     try:
         results = db_handler.see_user_data(user_id)
