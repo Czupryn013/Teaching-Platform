@@ -52,8 +52,7 @@ class Lesson(db.Model):
     def get_json(self):
         all_students = []
         for student in self.students: all_students.append(student.username)
-        return {"id": self.id, "teacher_id": self.teacher_id, "teacher": self.teacher.get_censured_json(), "info": self.info, "students": all_students}
+        return {"id": self.id, "teacher_id": self.teacher_id, "teacher": self.teacher.username, "info": self.info, "students": all_students}
 
-
-
-
+    def get_censured_json(self):
+        return {"teacher":self.teacher.username, "info": self.info}
