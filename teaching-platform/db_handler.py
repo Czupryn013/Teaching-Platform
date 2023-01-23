@@ -5,7 +5,7 @@ import jsonpickle
 from werkzeug.security import check_password_hash
 
 import exceptions
-from models import User, Role
+from models import User, Role, Lesson
 from extensions import db
 import validation
 
@@ -42,19 +42,17 @@ def remove_user(id_to_delete):
 
     logging.info(f"User with id {id_to_delete} has been removed sucessfuly.")
 
-def see_all_users():
+def get_all_users():
     results = User.query.all()
     users = []
     for user in results: users.append(user.get_censured_json())
 
     return users
 
-
-def see_user_data(user_id):
+def get_user_data(user_id):
     user = User.query.filter_by(id=user_id).first()
 
     if not user: raise exceptions.UserDosentExistError()
-
 
     return user.get_censured_json()
 
@@ -91,3 +89,36 @@ def update_password(password, id):
     db.session.commit()
 
 
+def add_lesson(teacher_id, info):
+    teacher = User.query.filter_by(id=teacher_id, role=Role.TEACHER).first()
+    if not teacher: raise exceptions.TeacherDosentExistError()
+    lesson = Lesson(info=info, teacher=teacher)
+
+    db.session.add(lesson)
+    db.session.commit()
+
+def add_student_to_lesson(student_id, lesson_id, teacher_id):
+    lesson = Lesson.query.filter_by(id=lesson_id).first()
+    student, teacher = User.query.filter_by(id=student_id).first(), User.query.filter_by(id=teacher_id).first()
+
+    if not student: raise exceptions.UserDosentExistError()
+    if not lesson: raise exceptions.LessonDosentExistError()
+
+    if teacher.role != Role.ADMIN and lesson not in teacher.teaching: raise exceptions.AuthError()
+
+    if student in lesson.students: raise exceptions.UserAlreadyAddedError()
+
+    lesson.students.append(student)
+    db.session.commit()
+
+def get_all_lessons():
+    results, lessons = Lesson.query.all(), []
+
+    for lesson in results: lessons.append(lesson.get_json())
+    return lessons
+
+def get_lesson(lesson_id):
+    lesson = Lesson.query.filter_by(id=lesson_id).first()
+    if not lesson: raise exceptions.LessonDosentExistError()
+
+    return lesson.get_json()

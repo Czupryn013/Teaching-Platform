@@ -46,24 +46,24 @@ def remove_user(id_to_delete):
 
 @controller_bp.route("/users", methods=["GET"])
 @auth.login_required()
-def see_all_users():
-    return db_handler.see_all_users(), 200
+def get_all_users():
+    return db_handler.get_all_users(), 200
 
-@controller_bp.route("/users/<id>", methods=["GET"])
+@controller_bp.route("/users/<user_id>", methods=["GET"])
 @auth.login_required(role=Role.ADMIN)
-def see_user_data(id):
+def get_user_data(user_id):
     try:
-        results = db_handler.see_user_data(id)
+        results = db_handler.get_user_data(user_id)
         return results, 200
     except exceptions.UserDosentExistError as e:
         return e.message, e.status
 
 @controller_bp.route("/users/me", methods=["GET"])
 @auth.login_required()
-def see_my_data():
+def get_my_data():
     user_id = auth.current_user().id
     try:
-        results = db_handler.see_user_data(user_id)
+        results = db_handler.get_user_data(user_id)
         return results, 200
     except exceptions.UserDosentExistError as e:
         return e.message, e.status
@@ -107,4 +107,46 @@ def change_user_role(user_id):
 
 
 
+@controller_bp.route("/lessons", methods=["POST"])
+@auth.login_required(role = [Role.ADMIN, Role.TEACHER])
+def add_lesson():
+    request_data = request.get_json()
+    teacher_id, info = request_data.get("teacher_id"), request_data.get("info")
 
+    if not teacher_id or not info: return "Incorrect json body.", 400
+
+    try:
+        db_handler.add_lesson(teacher_id, info)
+    except exceptions.ResourceDosentExistError as e:
+        return e.message, e.status
+
+    return f"Lesson with teacher {teacher_id} has been added sucessfuly.", 201
+
+@controller_bp.route("/lessons/<lesson_id>", methods=["PATCH"])
+@auth.login_required(role = [Role.ADMIN, Role.TEACHER])
+def add_student_to_lesson(lesson_id):
+    request_data = request.get_json()
+    student_id = request_data.get("student_id")
+    teacher_id = auth.current_user().id
+    if not student_id: return "Incorrect json body", 400
+
+    try:
+        db_handler.add_student_to_lesson(student_id, lesson_id, teacher_id)
+    except (exceptions.UserAlreadyAddedError, exceptions.AuthError) as e:
+        return e.message, e.status
+
+    return f"User {student_id} added to lesson {lesson_id} sucesfully!"
+
+@controller_bp.route("/lessons", methods=["GET"])
+@auth.login_required()
+def get_all_lessons():
+    return db_handler.get_all_lessons(), 200
+
+@controller_bp.route("/lessons/<lesson_id>", methods=["GET"])
+@auth.login_required(role=Role.ADMIN)
+def get_lesson(lesson_id):
+    try:
+        results = db_handler.get_lesson(lesson_id)
+    except exceptions.LessonDosentExistError as e:
+        return e.message, e.status
+    return results, 200
