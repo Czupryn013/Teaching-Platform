@@ -1,10 +1,9 @@
 from flask import Blueprint, request
 
-from extensions import auth
-from models import Role, get_all_roles
-import db_handler
-import exceptions
-
+from teaching_platform.extensions import auth
+from teaching_platform.models import Role, get_all_roles
+from teaching_platform.users import db_handler as user_db_handler, exceptions
+from teaching_platform.lessons import db_handler as lesson_db_handler
 
 controller_bp = Blueprint("controller_bp", __name__)
 
@@ -12,7 +11,7 @@ controller_bp = Blueprint("controller_bp", __name__)
 @auth.verify_password
 def verify_password(username, password):
     try:
-        user = db_handler.check_auth(username, password)
+        user = user_db_handler.check_auth(username, password)
     except exceptions.AuthError:
         return None
     return user
@@ -29,7 +28,7 @@ def add_user():
     if not username or not password: return "Incorrect json body", 400
 
     try:
-        db_handler.add_user(username, password)
+        user_db_handler.add_user(username, password)
     except exceptions.UserCredentialsError as e:
         return e.message, e.status
 
@@ -39,7 +38,7 @@ def add_user():
 @auth.login_required(role=Role.ADMIN)
 def remove_user(id_to_delete):
     try:
-        db_handler.remove_user(id_to_delete)
+        user_db_handler.remove_user(id_to_delete)
         return f"User with id {id_to_delete} has been deleted sucessfuly.", 200
     except exceptions.UserDosentExistError as e:
         return e.message, e.status
@@ -47,13 +46,13 @@ def remove_user(id_to_delete):
 @controller_bp.route("/users", methods=["GET"])
 @auth.login_required()
 def get_all_users():
-    return db_handler.get_all_users(), 200
+    return user_db_handler.get_all_users(), 200
 
 @controller_bp.route("/users/<user_id>", methods=["GET"])
 @auth.login_required(role=Role.ADMIN)
 def get_user_data(user_id):
     try:
-        results = db_handler.get_user_data(user_id)
+        results = user_db_handler.get_user_data(user_id)
         return results, 200
     except exceptions.UserDosentExistError as e:
         return e.message, e.status
@@ -63,7 +62,7 @@ def get_user_data(user_id):
 def get_my_data():
     user_id = auth.current_user().id
     try:
-        results = db_handler.get_user_data(user_id)
+        results = user_db_handler.get_user_data(user_id)
         return results, 200
     except exceptions.UserDosentExistError as e:
         return e.message, e.status
@@ -78,12 +77,12 @@ def update_my_info():
 
     if username:
         try:
-            db_handler.update_username(username, current_id)
+            user_db_handler.update_username(username, current_id)
         except exceptions.UserDosentExistError as e:
             return e.message, e.status
     elif password:
         try:
-            db_handler.update_password(password, current_id)
+            user_db_handler.update_password(password, current_id)
         except (exceptions.UserDosentExistError, exceptions.UserCredentialsError) as e:
             return e.message, e.status
 
@@ -99,7 +98,7 @@ def change_user_role(user_id):
     elif role not in get_all_roles(): return "Incorrect role value.", 400
 
     try:
-        db_handler.update_role(role, user_id)
+        user_db_handler.update_role(role, user_id)
     except exceptions.UserDosentExistError as e:
         return e.message, e.status
 
@@ -116,7 +115,7 @@ def add_lesson():
     if not teacher_id or not info: return "Incorrect json body.", 400
 
     try:
-        db_handler.add_lesson(teacher_id, info)
+        lesson_db_handler.add_lesson(teacher_id, info)
     except exceptions.ResourceDosentExistError as e:
         return e.message, e.status
 
@@ -131,7 +130,7 @@ def add_student_to_lesson(lesson_id):
     if not student_id: return "Incorrect json body", 400
 
     try:
-        db_handler.add_student_to_lesson(student_id, lesson_id, teacher_id)
+        lesson_db_handler.add_student_to_lesson(student_id, lesson_id, teacher_id)
     except (exceptions.UserAlreadyAddedError, exceptions.AuthError) as e:
         return e.message, e.status
 
@@ -140,13 +139,13 @@ def add_student_to_lesson(lesson_id):
 @controller_bp.route("/lessons", methods=["GET"])
 @auth.login_required()
 def get_all_lessons():
-    return db_handler.get_all_lessons(), 200
+    return lesson_db_handler.get_all_lessons(), 200
 
 @controller_bp.route("/lessons/<lesson_id>", methods=["GET"])
 @auth.login_required(role=Role.ADMIN)
 def get_lesson(lesson_id):
     try:
-        results = db_handler.get_lesson(lesson_id)
+        results = lesson_db_handler.get_lesson(lesson_id)
     except exceptions.LessonDosentExistError as e:
         return e.message, e.status
     return results, 200

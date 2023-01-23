@@ -2,8 +2,8 @@ import yaml
 
 from flask import Flask
 
-from controller import controller_bp
-from extensions import db
+from teaching_platform.controller import controller_bp
+from teaching_platform.extensions import db
 
 
 with open("../config.yaml", "r") as f:

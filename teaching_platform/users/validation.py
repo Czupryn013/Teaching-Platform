@@ -1,7 +1,8 @@
 from password_strength import PasswordPolicy
 from werkzeug.security import generate_password_hash
 
-import exceptions
+from teaching_platform.users import exceptions
+
 
 def validate_password(password):
     policy = PasswordPolicy.from_names(length=5, uppercase=1, numbers=2, special=1, nonletters=2)

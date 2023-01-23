@@ -1,10 +1,6 @@
 from enum import Enum
 
-from extensions import db
-
-
-def get_all_roles():
-    return [role.value for role in Role]
+from teaching_platform.extensions import db
 
 
 class Role(Enum):
@@ -15,11 +11,6 @@ class Role(Enum):
     def __repr__(self):
         return str(self.value)
 
-
-user_lessons = db.Table("user_lessons",
-    db.Column("user_id", db.Integer, db.ForeignKey("users.id")),
-    db.Column("lesson_id", db.Integer, db.ForeignKey("lessons.id"))
-)
 
 class User(db.Model):
     __tablename__ = "users"
@@ -39,6 +30,15 @@ class User(db.Model):
     def get_json(self):
         return {"id": self.id, "username": self.username, "password": self.password, "role": self.role.name}
 
+
+def get_all_roles():
+    return [role.value for role in Role]
+
+
+user_lessons = db.Table("user_lessons",
+    db.Column("user_id", db.Integer, db.ForeignKey("users.id")),
+    db.Column("lesson_id", db.Integer, db.ForeignKey("lessons.id"))
+)
 
 class Lesson(db.Model):
     __tablename__ = "lessons"
