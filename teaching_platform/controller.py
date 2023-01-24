@@ -3,7 +3,7 @@ from flask import Blueprint, request
 from teaching_platform.extensions import auth
 from teaching_platform.models import Role, get_all_roles
 from teaching_platform.users import db_handler as user_db_handler, exceptions
-from teaching_platform.lessons import db_handler as lesson_db_handler
+from teaching_platform.lessons import db_handler as lesson_db_handler, exceptions as l_exceptions
 
 controller_bp = Blueprint("controller_bp", __name__)
 
@@ -88,7 +88,6 @@ def update_my_info():
 
     return "Patched sucesfully!", 200
 
-
 @controller_bp.route("/update/<user_id>", methods=["PATCH"])
 @auth.login_required(role=Role.ADMIN)
 def change_user_role(user_id):
@@ -116,12 +115,12 @@ def add_lesson():
 
     try:
         lesson_db_handler.add_lesson(teacher_id, info)
-    except exceptions.ResourceDosentExistError as e:
+    except l_exceptions.ResourceDosentExistError as e:
         return e.message, e.status
 
     return f"Lesson with teacher {teacher_id} has been added sucessfuly.", 201
 
-@controller_bp.route("/lessons/<lesson_id>", methods=["PATCH"])
+@controller_bp.route("/lessons/<lesson_id>/add", methods=["PATCH"])
 @auth.login_required(role = [Role.ADMIN, Role.TEACHER])
 def add_student_to_lesson(lesson_id):
     request_data = request.get_json()
@@ -131,7 +130,7 @@ def add_student_to_lesson(lesson_id):
 
     try:
         lesson_db_handler.add_student_to_lesson(student_id, lesson_id, teacher_id)
-    except (exceptions.UserAlreadyAddedError, exceptions.AuthError) as e:
+    except (l_exceptions.UserAlreadyAddedError, l_exceptions.AuthError) as e:
         return e.message, e.status
 
     return f"User {student_id} added to lesson {lesson_id} sucesfully!"
@@ -142,10 +141,36 @@ def get_all_lessons():
     return lesson_db_handler.get_all_lessons(), 200
 
 @controller_bp.route("/lessons/<lesson_id>", methods=["GET"])
-@auth.login_required(role=Role.ADMIN)
+@auth.login_required(role=[Role.ADMIN, Role.TEACHER])
 def get_lesson(lesson_id):
     try:
         results = lesson_db_handler.get_lesson(lesson_id)
-    except exceptions.LessonDosentExistError as e:
+    except l_exceptions.LessonDosentExistError as e:
         return e.message, e.status
     return results, 200
+
+
+@controller_bp.route("/lessons/<lesson_id>", methods=["DELETE"])
+@auth.login_required(role=[Role.ADMIN, Role.TEACHER])
+def remove_lesson(lesson_id):
+    teacher_id = auth.current_user().id
+    try:
+        lesson_db_handler.remove_lesson(lesson_id, teacher_id)
+        return f"Lesson with id {lesson_id} has been deleted sucessfuly.", 200
+    except (l_exceptions.LessonDosentExistError, l_exceptions.AuthError) as e:
+        return e.message, e.status
+
+@controller_bp.route("/lessons/<lesson_id>", methods=["PATCH"])
+@auth.login_required(role = [Role.ADMIN, Role.TEACHER])
+def update_lesson_details(lesson_id):
+    request_data, teacher_id = request.get_json(), auth.current_user().id
+    pre_lesson, info, homework = request_data.get("pre_lesson"), request_data.get("info"), request_data.get("homework")
+    if not [pre_lesson,info, homework]: return "Incorrect json bodyaa", 400
+
+
+    try:
+        lesson_db_handler.update_lesson_details(lesson_id, teacher_id, request_data)
+    except (l_exceptions.LessonDosentExistError, l_exceptions.AuthError) as e:
+        return e.message, e.status
+
+    return "Patched sucesfully!", 200

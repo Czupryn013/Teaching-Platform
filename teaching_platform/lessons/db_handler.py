@@ -47,3 +47,28 @@ def get_lesson(lesson_id):
     if not lesson: raise exceptions.LessonDosentExistError()
 
     return lesson.get_json()
+
+def remove_lesson(lesson_id, teacher_id):
+    query, teacher = Lesson.query.filter_by(id=lesson_id), User.query.filter_by(id=teacher_id).first()
+    lesson = query.first()
+
+    if not lesson: raise exceptions.LessonDosentExistError()
+    if teacher.role != Role.ADMIN and lesson not in teacher.teaching: raise exceptions.AuthError()
+
+    query.delete()
+    db.session.commit()
+
+    logging.info(f"Lesson with id {lesson_id} has been removed sucessfuly.")
+
+def update_lesson_details(lesson_id, teacher_id, updates):
+    lesson, teacher = Lesson.query.filter_by(id=lesson_id).first(), User.query.filter_by(id=teacher_id).first()
+
+    if not lesson: raise exceptions.LessonDosentExistError()
+    if teacher.role != Role.ADMIN and lesson not in teacher.teaching: raise exceptions.AuthError()
+
+    pre_lesson, info, homework = updates.get("pre_lesson"), updates.get("info"), updates.get("homework")
+
+    if pre_lesson: lesson.pre_lesson = pre_lesson
+    if info: lesson.info = info
+    if homework: lesson.homework = homework
+    db.session.commit()
