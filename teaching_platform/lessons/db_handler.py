@@ -36,6 +36,21 @@ def add_student_to_lesson(student_id, lesson_id, teacher_id):
     lesson.students.append(student)
     db.session.commit()
 
+def remove_student_from_lesson(student_id, lesson_id, teacher_id):
+    lesson = Lesson.query.filter_by(id=lesson_id).first()
+    student, teacher = User.query.filter_by(id=student_id).first(), User.query.filter_by(id=teacher_id).first()
+
+    if not student: raise exceptions.UserDosentExistError()
+    if not lesson: raise exceptions.LessonDosentExistError()
+
+    if teacher.role != Role.ADMIN and lesson not in teacher.teaching: raise exceptions.AuthError()
+
+    if student in lesson.students:
+        lesson.students.remove(student)
+    else:
+        raise exceptions.StudentNotInLesson()
+    db.session.commit()
+
 def get_all_lessons():
     results, lessons = Lesson.query.all(), []
 

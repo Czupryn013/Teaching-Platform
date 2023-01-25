@@ -130,7 +130,21 @@ def add_student_to_lesson(lesson_id):
 
     try:
         lesson_db_handler.add_student_to_lesson(student_id, lesson_id, teacher_id)
-    except (l_exceptions.UserAlreadyAddedError, l_exceptions.AuthError) as e:
+    except (l_exceptions.ResourceDosentExistError, l_exceptions.AuthError) as e:
+        return e.message, e.status
+
+    return f"User {student_id} added to lesson {lesson_id} sucesfully!"
+
+@controller_bp.route("/lessons/<lesson_id>/remove", methods=["PATCH"])
+@auth.login_required(role = [Role.ADMIN, Role.TEACHER])
+def remove_student_from_lesson(lesson_id):
+    request_data = request.get_json()
+    student_id, teacher_id = request_data.get("student_id"), auth.current_user().id
+    if not student_id: return "Incorrect json body", 400
+
+    try:
+        lesson_db_handler.remove_student_from_lesson(student_id, lesson_id, teacher_id)
+    except (l_exceptions.ResourceDosentExistError, l_exceptions.AuthError) as e:
         return e.message, e.status
 
     return f"User {student_id} added to lesson {lesson_id} sucesfully!"
