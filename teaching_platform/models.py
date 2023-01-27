@@ -20,6 +20,7 @@ class User(db.Model):
     role = db.Column(db.Enum(Role),nullable= False)
 
     teaching = db.relationship("Lesson", backref="teacher")
+    mentoring = db.relationship("Project", backref="mentor")
 
     def __repr__(self):
         return f"User(id: {self.id}, username: {self.username}, role: {self.role})"
@@ -40,6 +41,11 @@ user_lessons = db.Table("user_lessons",
     db.Column("lesson_id", db.Integer, db.ForeignKey("lessons.id"))
 )
 
+user_projects = db.Table("user_projects",
+    db.Column("user_id", db.Integer, db.ForeignKey("users.id")),
+    db.Column("project_id", db.Integer, db.ForeignKey("projects.id"))
+)
+
 class Lesson(db.Model):
     __tablename__ = "lessons"
     id = db.Column(db.Integer, primary_key=True)
@@ -56,3 +62,13 @@ class Lesson(db.Model):
 
     def get_censured_json(self):
         return {"teacher":self.teacher.username, "info": self.info}
+
+
+class Project(db.Model):
+    __tablename__ = "projects"
+    id = db.Column(db.Integer, primary_key=True)
+    mentor_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    students = db.relationship("User", secondary=user_projects, backref="projects")
+    topice = db.Column(db.String())
+    info = db.Column(db.String())
+    status = db.Column(db.String())
