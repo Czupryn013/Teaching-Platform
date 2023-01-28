@@ -1,19 +1,12 @@
 import logging
 
-import yaml
-import jsonpickle
 from werkzeug.security import check_password_hash
 
 from teaching_platform.models import User, Role
 from teaching_platform.extensions import db
-from teaching_platform.users import validation, exceptions
+from teaching_platform.users import exceptions
+from teaching_platform import validation
 
-with open("../config.yaml", "r") as f:
-    config = yaml.load(f, Loader=yaml.FullLoader)
-
-logging.basicConfig(level=logging.INFO, filemode="w", filename="../logs.log")
-jsonpickle.set_preferred_backend('json')
-jsonpickle.set_encoder_options('json', ensure_ascii=False)
 
 def add_user(username, password):
     username = validation.validate_username(username)
@@ -42,17 +35,15 @@ def remove_user(id_to_delete):
 
 def get_all_users():
     results = User.query.all()
-    users = []
-    for user in results: users.append(user.get_censured_json())
 
-    return users
+    return results
 
-def get_user_data(user_id):
+def get_user(user_id):
     user = User.query.filter_by(id=user_id).first()
 
     if not user: raise exceptions.UserDosentExistError()
 
-    return user.get_censured_json()
+    return user
 
 def check_auth(username, password):
     user = User.query.filter_by(username=username).first()

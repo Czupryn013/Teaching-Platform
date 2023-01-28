@@ -67,8 +67,14 @@ class Lesson(db.Model):
 class Project(db.Model):
     __tablename__ = "projects"
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(), nullable=False)
     mentor_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     students = db.relationship("User", secondary=user_projects, backref="projects")
-    topice = db.Column(db.String())
     info = db.Column(db.String())
-    status = db.Column(db.String())
+    status = db.Column(db.String(), nullable=False)
+
+
+    def get_json(self):
+        all_students = []
+        for student in self.students: all_students.append(student.username)
+        return {"id": self.id, "name": self.name, "mentor_id": self.mentor_id, "info": self.info, "status": self.status, "students": all_students}

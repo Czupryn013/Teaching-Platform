@@ -2,14 +2,14 @@ from flask import Blueprint, request
 
 from teaching_platform.extensions import auth
 from teaching_platform.models import Role, get_all_roles
-from teaching_platform.users import db_handler as user_db_handler, exceptions
+from teaching_platform.users import db_handler, exceptions
 
 user_controller_bp = Blueprint("user_controller_bp", __name__)
 
 @auth.verify_password
 def verify_password(username, password):
     try:
-        user = user_db_handler.check_auth(username, password)
+        user = db_handler.check_auth(username, password)
     except exceptions.AuthError:
         return None
     return user
@@ -27,7 +27,7 @@ def add_user():
     if not username or not password: return "Incorrect json body", 400
 
     try:
-        user_db_handler.add_user(username, password)
+        db_handler.add_user(username, password)
     except exceptions.UserCredentialsError as e:
         return e.message, e.status
 
@@ -37,7 +37,7 @@ def add_user():
 @auth.login_required(role=Role.ADMIN)
 def remove_user(id_to_delete):
     try:
-        user_db_handler.remove_user(id_to_delete)
+        db_handler.remove_user(id_to_delete)
         return f"User with id {id_to_delete} has been deleted sucessfuly.", 200
     except exceptions.UserDosentExistError as e:
         return e.message, e.status
@@ -45,13 +45,16 @@ def remove_user(id_to_delete):
 @user_controller_bp.route("/users", methods=["GET"])
 @auth.login_required()
 def get_all_users():
-    return user_db_handler.get_all_users(), 200
+    results, users = db_handler.get_all_users(), []
+    for user in results: users.append(user.get_censured_json())
+
+    return users, 200
 
 @user_controller_bp.route("/users/<user_id>", methods=["GET"])
 @auth.login_required(role=Role.ADMIN)
-def get_user_data(user_id):
+def get_user(user_id):
     try:
-        results = user_db_handler.get_user_data(user_id)
+        results = db_handler.get_user(user_id).get_censured_json()
         return results, 200
     except exceptions.UserDosentExistError as e:
         return e.message, e.status
@@ -61,7 +64,7 @@ def get_user_data(user_id):
 def get_my_data():
     user_id = auth.current_user().id
     try:
-        results = user_db_handler.get_user_data(user_id)
+        results = db_handler.get_user(user_id).get_censured_json()
         return results, 200
     except exceptions.UserDosentExistError as e:
         return e.message, e.status
@@ -76,12 +79,12 @@ def update_my_info():
 
     if username:
         try:
-            user_db_handler.update_username(username, current_id)
+            db_handler.update_username(username, current_id)
         except exceptions.UserDosentExistError as e:
             return e.message, e.status
     elif password:
         try:
-            user_db_handler.update_password(password, current_id)
+            db_handler.update_password(password, current_id)
         except (exceptions.UserDosentExistError, exceptions.UserCredentialsError) as e:
             return e.message, e.status
 
@@ -96,7 +99,7 @@ def change_user_role(user_id):
     elif role not in get_all_roles(): return "Incorrect role value.", 400
 
     try:
-        user_db_handler.update_role(role, user_id)
+        db_handler.update_role(role, user_id)
     except exceptions.UserDosentExistError as e:
         return e.message, e.status
 
