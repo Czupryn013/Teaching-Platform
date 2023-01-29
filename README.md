@@ -43,15 +43,24 @@ Users:
 Lessons:
 * `/lessons`  - **[GET]**
 * `/lessons/<lesson_id>` - **[GET]**
-* `/lessons/remove<lesson_id>` - **[DELETE]**
+* `/lessons/remove/<lesson_id>` - **[DELETE]**
 * `/lessons` - **[POST]**
 * `/lessons/<lesson_id>/remove` - **[PATCH]**
 * `/lessons/<lesson_id>/add` - **[PATCH]**
+* `/lessons/<lesson_id>` - **[PATCH]**
 
 Projects:
-
+* `/projects`  - **[GET]**
+* `/projects/<project_id>` - **[GET]**
+* `/projects` - **[POST]**
+* `/projects/remove/<project_id>` - **[DELETE]**
+* `/projects/<project_id>/remove` - **[PATCH]**
+* `/projects/<project_id>/add` - **[PATCH]**
+* `/projects/<project_id>` - **[PATCH]**
+* `/projects/<project_id>/mentor` - **[PATCH]**
+* 
 ### Endpoint requirments
-**Users**:
+**Users:**
 * **[GET]** `/users` - Requires sender to pass
 valid authorization to an account with `ADMIN` role.
 * **[GET]** `/users/me` - Requires sender to pass valid 
@@ -91,18 +100,47 @@ follow this template:
         "password" : "PASSWORD"
     }
     ```
-Lessons:
+**Lessons:**
 * **[GET]** `/lessons` - Requires being logged in, returns all lessons.
 * **[GET]** `/lessons/<lesson_id>` - Requires being logged in, returns 
-lesson with `<lesson_id>.
-* **[DELETE]** `/lessons/remove/<lesson_id>` - Requires being logged in,
+lesson with `<lesson_id>`.
+* **[DELETE]** `/lessons/<lesson_id>` - Requires being logged in,
 as admin or teacher who teaches this lesson. Removes lesson with given id.
 * **[POST]** `/lessons` - Takes `teacher_id` and `info` values in request body.
 Adds new lesson. `teacher_id` needs to be an id of `User` with `TEACHER` role.
 * **[PATCH]** `/lessons/<lesson_id>/remove` - Requires authorization as
 Admin or teacher who teaches this class. Removes student with given id from lesson.
- **[PATCH]** `/lessons/<lesson_id>/add` - Requires authorization as
+Parameter `student_id` should be passed in request body.
+* **[PATCH]** `/lessons/<lesson_id>/add` - Requires authorization as
 Admin or teacher who teaches this class. Adds student with given id to lesson.
+Parameter `student_id` should be passed in request body.
+* **[PATCH]** `/lessons/<lesson_id>` - Requires authorization as
+Admin or teacher who teaches this class. Updates lesson's details. To
+update pass 1 or more of following values: `info`, `homework`, `pre_lesson`
+in request body.
+
+**Projects:**
+* **[GET]** `/projects` - Requires being logged in, returns all projects.
+* **[GET]** `/projects/<project_id>` - Requires being logged in, returns 
+lesson with `<project_id>`.
+* **[DELETE]** `/projects/<project_id>` - Requires being logged in,
+as admin or teacher who teaches this lesson. Removes lesson with given id.
+* **[POST]** `/projects` - Takes `mentor_id` and `name` values in request body.
+Adds new lesson. Variable `status` is set to "In development." by default. 
+`mentor_id` needs to be an id of a `User` with `TEACHER` role.
+* **[PATCH]** `/projects/<project_id>/remove` - Requires authorization as
+Admin or mentor who leads this project. Removes student with given id from project.
+Parameter `student_id` should be passed in request body.
+* **[PATCH]** `/projects/<project_id>/add` - Requires authorization as
+Admin or mentor who leads this project. Adds student with given id to the 
+project. Parameter `student_id` should be passed in request body.
+* **[PATCH]** `/projects/<project_id>/mentor` - Requires authorization as
+Admin or mentor leading this project. Reasigns mentor to user with `<mentor_id>`,
+this user must have role `ADMIN` or `TEACHER`.
+* **[PATCH]** `/projects/<project_id>` - equires authorization as
+Admin or mentor who leads this project. Updates project details. To
+update pass one or more of the following values: `name`, `status`, `info`
+in request body. Values of `Project` will be updated acordingly.
 ### Password and username requirments
 #### Password:
 * Length 5 to 50
