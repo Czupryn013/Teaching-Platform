@@ -25,7 +25,7 @@ cd teaching-platform
 python3 main.py / python main.py
 ```
 App runs on `http://127.0.0.1:5000` by default, to change it set attribute
-`port` im `main.py` to the desired one in line `23`.
+`port` in `main.py` to the desired one in line `23`.
 ```python
 app.run(port=5000)
 ```
@@ -33,13 +33,25 @@ app.run(port=5000)
 ## Api usage
 
 ### Endpoints
+Users:
 * `/users`  - **[GET]**
 * `/users/me` - **[GET]**
 * `/users/<user_id>` - **[GET]**
 * `/users/remove<user_id>` - **[DELETE]**
 * `/users` - **[POST]**
 
+Lessons:
+* `/lessons`  - **[GET]**
+* `/lessons/<lesson_id>` - **[GET]**
+* `/lessons/remove<lesson_id>` - **[DELETE]**
+* `/lessons` - **[POST]**
+* `/lessons/<lesson_id>/remove` - **[PATCH]**
+* `/lessons/<lesson_id>/add` - **[PATCH]**
+
+Projects:
+
 ### Endpoint requirments
+**Users**:
 * **[GET]** `/users` - Requires sender to pass
 valid authorization to an account with `ADMIN` role.
 * **[GET]** `/users/me` - Requires sender to pass valid 
@@ -79,6 +91,18 @@ follow this template:
         "password" : "PASSWORD"
     }
     ```
+Lessons:
+* **[GET]** `/lessons` - Requires being logged in, returns all lessons.
+* **[GET]** `/lessons/<lesson_id>` - Requires being logged in, returns 
+lesson with `<lesson_id>.
+* **[DELETE]** `/lessons/remove/<lesson_id>` - Requires being logged in,
+as admin or teacher who teaches this lesson. Removes lesson with given id.
+* **[POST]** `/lessons` - Takes `teacher_id` and `info` values in request body.
+Adds new lesson. `teacher_id` needs to be an id of `User` with `TEACHER` role.
+* **[PATCH]** `/lessons/<lesson_id>/remove` - Requires authorization as
+Admin or teacher who teaches this class. Removes student with given id from lesson.
+ **[PATCH]** `/lessons/<lesson_id>/add` - Requires authorization as
+Admin or teacher who teaches this class. Adds student with given id to lesson.
 ### Password and username requirments
 #### Password:
 * Length 5 to 50
