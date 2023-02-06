@@ -13,8 +13,9 @@ from teaching_platform.extensions import db
 with open("../config.yaml", "r") as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
 db_config = config["database"]
+log_config = config["logging"]
 
-logging.basicConfig(level=logging.INFO, filemode="w", filename="../logs.log")
+logging.basicConfig(level=log_config["logging_lvl"], filemode="w", filename="../logs.log")
 jsonpickle.set_preferred_backend('json')
 jsonpickle.set_encoder_options('json', ensure_ascii=False)
 
@@ -23,7 +24,7 @@ app.register_blueprint(user_controller_bp)
 app.register_blueprint(lesson_controller_bp)
 app.register_blueprint(project_controller_bp)
 app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{db_config['user']}:{db_config['password']}" \
-                                        f"@localhost/{db_config['dbname']}"
+                                        f"@localhost:{db_config['port']}/{db_config['dbname']}"
 
 db.init_app(app)
 

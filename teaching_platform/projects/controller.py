@@ -67,7 +67,6 @@ def update_proejct(project_id):
 
     return "Patched sucesfully!", 200
 
-
 @project_controller_bp.route("/projects/<project_id>/mentor", methods=["PATCH"])
 @auth.login_required(role=Role.ADMIN)
 def reasign_mentor(project_id):

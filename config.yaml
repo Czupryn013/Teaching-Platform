@@ -4,3 +4,11 @@ database:
   dbname: "teaching-platform"
   port: 5432
   password: "-"
+password:
+  length: 5
+  uppercase: 1
+  numbers: 2
+  special: 1
+  nonletters: 2
+logging:
+  logging_lvl: "INFO"

@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 from distutils.core import setup
+from setuptools import find_packages
 
 setup(name="teaching_platform",
       version="0.1.0",
-      packages=["teaching_platform"],
+      packages=find_packages(),
       install_requires = ["pyyaml","password_strength", "flask","flask_sqlalchemy", "jsonpickle", "flask_httpauth", "psycopg2"]
       )

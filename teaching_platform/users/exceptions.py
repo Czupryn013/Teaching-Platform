@@ -28,7 +28,7 @@ class PasswordToWeakError(UserCredentialsError):
     def __init__(self, message="Given password is to weak."):
         self.message = message
         self.status = 406
-        logging.warning(message)
+        logging.warning(self.message)
 
 class IncorrectUsername(UserCredentialsError):
     def __init__(self):
@@ -40,7 +40,7 @@ class UserDosentExistError(ResourceDosentExistError):
     def __init__(self):
         self.message = "User with this id dosen't exist."
         self.status = 404
-        logging.warning("User with this id dosen't exist.")
+        logging.warning(self.message)
 
 class AuthError(Exception):
     def __init__(self):

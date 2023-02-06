@@ -9,7 +9,7 @@ from teaching_platform import validation
 
 
 def add_user(username, password):
-    username = validation.validate_username(username)
+    validation.validate_username(username)
     encoded_password = validation.validate_password(password)
 
     user = User(username=username, password=encoded_password, role=Role.STUDENT)
@@ -56,7 +56,7 @@ def update_username(username, id):
     user = User.query.filter_by(id=id).first()
     if not user: raise exceptions.UserDosentExistError()
 
-    username = validation.validate_username(username)
+    validation.validate_username(username)
 
     user.username = username
     db.session.commit()
