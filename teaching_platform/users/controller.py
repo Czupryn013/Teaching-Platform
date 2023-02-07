@@ -1,3 +1,5 @@
+import logging
+
 from flask import Blueprint, request
 
 from teaching_platform.extensions import auth
@@ -10,7 +12,8 @@ user_controller_bp = Blueprint("user_controller_bp", __name__)
 def verify_password(username, password):
     try:
         user = db_handler.check_auth(username, password)
-    except exceptions.AuthError:
+    except exceptions.AuthError as e:
+        logging.warning(e.message)
         return None
     return user
 
@@ -29,6 +32,7 @@ def add_user():
     try:
         db_handler.add_user(username, password)
     except exceptions.UserCredentialsError as e:
+        logging.warning(e.message)
         return e.message, e.status
 
     return f"User {username} has been added sucessfuly.", 201
@@ -40,6 +44,7 @@ def remove_user(id_to_delete):
         db_handler.remove_user(id_to_delete)
         return f"User with id {id_to_delete} has been deleted sucessfuly.", 200
     except exceptions.UserDosentExistError as e:
+        logging.warning(e.message)
         return e.message, e.status
 
 @user_controller_bp.route("/users", methods=["GET"])
@@ -57,6 +62,7 @@ def get_user(user_id):
         results = db_handler.get_user(user_id).get_censured_json()
         return results, 200
     except exceptions.UserDosentExistError as e:
+        logging.warning(e.message)
         return e.message, e.status
 
 @user_controller_bp.route("/users/me", methods=["GET"])
@@ -67,6 +73,7 @@ def get_my_data():
         results = db_handler.get_user(user_id).get_censured_json()
         return results, 200
     except exceptions.UserDosentExistError as e:
+        logging.warning(e.message)
         return e.message, e.status
 
 @user_controller_bp.route("/users/me", methods=["PATCH"])
@@ -81,11 +88,13 @@ def update_my_info():
         try:
             db_handler.update_username(username, current_id)
         except exceptions.UserDosentExistError as e:
+            logging.warning(e.message)
             return e.message, e.status
     elif password:
         try:
             db_handler.update_password(password, current_id)
         except (exceptions.UserDosentExistError, exceptions.UserCredentialsError) as e:
+            logging.warning(e.message)
             return e.message, e.status
 
     return "Patched sucesfully!", 200
@@ -101,6 +110,7 @@ def change_user_role(user_id):
     try:
         db_handler.update_role(role, user_id)
     except exceptions.UserDosentExistError as e:
+        logging.warning(e.message)
         return e.message, e.status
 
     return f"Role of user with id {user_id} changed to {role} sucesfully!"

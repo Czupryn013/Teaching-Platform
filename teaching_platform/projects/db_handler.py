@@ -26,6 +26,7 @@ def remove_project(project_id):
     project = query.first()
     if not project: raise exceptions.ProjectDosentExistError()
 
+    project.students = []
     query.delete()
     db.session.commit()
 

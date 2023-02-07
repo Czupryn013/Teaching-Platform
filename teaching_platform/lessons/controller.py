@@ -1,3 +1,5 @@
+import logging
+
 from flask import Blueprint, request
 
 from teaching_platform.extensions import auth
@@ -17,6 +19,7 @@ def add_lesson():
     try:
         db_handler.add_lesson(teacher_id, info)
     except exceptions.ResourceDosentExistError as e:
+        logging.warning(e.message)
         return e.message, e.status
 
     return f"Lesson with teacher {teacher_id} has been added sucessfuly.", 201
@@ -33,6 +36,7 @@ def add_student_to_lesson(lesson_id):
         validation.validate_teacher(teacher_id, lesson_id)
         db_handler.add_student_to_lesson(student_id, lesson_id)
     except (exceptions.ResourceDosentExistError, exceptions.AuthError) as e:
+        logging.warning(e.message)
         return e.message, e.status
 
     return f"User {student_id} added to lesson {lesson_id} sucesfully!"
@@ -48,6 +52,7 @@ def remove_student_from_lesson(lesson_id):
         validation.validate_teacher(teacher_id, lesson_id)
         db_handler.remove_student_from_lesson(student_id, lesson_id)
     except (exceptions.ResourceDosentExistError, exceptions.AuthError) as e:
+        logging.warning(e.message)
         return e.message, e.status
 
     return f"User {student_id} has been removed from lesson {lesson_id} sucesfully!"
@@ -65,6 +70,7 @@ def get_lesson(lesson_id):
     try:
         results = db_handler.get_lesson(lesson_id).get_json()
     except exceptions.LessonDosentExistError as e:
+        logging.warning(e.message)
         return e.message, e.status
     return results, 200
 
@@ -77,6 +83,7 @@ def remove_lesson(lesson_id):
         validation.validate_teacher(teacher_id, lesson_id)
         db_handler.remove_lesson(lesson_id)
     except (exceptions.LessonDosentExistError, exceptions.AuthError) as e:
+        logging.warning(e.message)
         return e.message, e.status
 
     return f"Lesson with id {lesson_id} has been deleted sucessfuly.", 200
@@ -92,6 +99,7 @@ def update_lesson_details(lesson_id):
     try:
         db_handler.update_lesson_details(lesson_id, request_data)
     except (exceptions.LessonDosentExistError, exceptions.AuthError) as e:
+        logging.warning(e.message)
         return e.message, e.status
 
     return "Patched sucesfully!", 200

@@ -1,3 +1,5 @@
+import logging
+
 from flask import Blueprint, request
 
 from teaching_platform.extensions import auth
@@ -19,6 +21,7 @@ def add_project():
     try:
         db_handler.add_project(name, mentor_id)
     except exceptions.ResourceDosentExistError as e:
+        logging.warning(e.message)
         return e.message, e.status
 
     return f"Project {name} with mentor {mentor_id} has been added sucessfuly.", 201
@@ -36,6 +39,7 @@ def get_project(project_id):
     try:
         project = db_handler.get_project(project_id)
     except exceptions.ProjectDosentExistError as e:
+        logging.warning(e.message)
         return e.message, e.status
     return project.get_json(), 200
 
@@ -47,6 +51,7 @@ def remove_project(project_id):
         validation.validate_mentor(mentor_id, project_id)
         db_handler.remove_project(project_id)
     except (exceptions.ProjectDosentExistError, exceptions.AuthError) as e:
+        logging.warning(e.message)
         return e.message, e.status
 
     return f"Project with id {project_id} has been deleted sucessfuly.", 200
@@ -63,6 +68,7 @@ def update_proejct(project_id):
         validation.validate_mentor(mentor_id, project_id)
         db_handler.update_project(project_id, request_data)
     except exceptions.ProjectDosentExistError as e:
+        logging.warning(e.message)
         return e.message, e.status
 
     return "Patched sucesfully!", 200
@@ -79,6 +85,7 @@ def reasign_mentor(project_id):
         validation.validate_mentor(mentor_id, project_id)
         db_handler.reasign_mentor(project_id, new_mentor_id)
     except (exceptions.ProjectDosentExistError, exceptions.MentorDosentExistError) as e:
+        logging.warning(e.message)
         return e.message, e.status
 
     return "Reasigned sucesfully!", 200
@@ -95,6 +102,7 @@ def add_user_to_project(project_id):
         validation.validate_mentor(mentor_id, project_id)
         db_handler.add_user_to_project(user_id, project_id)
     except exceptions.ResourceDosentExistError as e:
+        logging.warning(e.message)
         return e.message, e.status
 
     return f"User {user_id} has been added to project {project_id} sucesfully!"
@@ -111,6 +119,7 @@ def remove_user_from_project(project_id):
         validation.validate_mentor(mentor_id, project_id)
         db_handler.remove_user_from_project(user_id, project_id)
     except exceptions.ResourceDosentExistError as e:
+        logging.warning(e.message)
         return e.message, e.status
 
     return f"User {user_id} has been removed from project {project_id} sucesfully!"

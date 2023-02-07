@@ -57,6 +57,7 @@ def remove_lesson(lesson_id):
 
     if not lesson: raise exceptions.LessonDosentExistError()
 
+    lesson.students = []
     query.delete()
     db.session.commit()
 

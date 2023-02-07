@@ -28,6 +28,7 @@ def remove_user(id_to_delete):
 
     if not user: raise exceptions.UserDosentExistError()
 
+    user.lessons = []
     query.delete()
     db.session.commit()
 
