@@ -19,7 +19,8 @@ Then use pip to install all dependencies.
 pip install .
 ```
 In the main directory create `.env` file and put inside: `db_password`
-and `secret_key`, `salt` for creating tokens.
+and `secret_key`, `salt` for creating tokens. Add also `email_password`
+and `email_login`, those should be credentials for an Outlook account.
 After that you are almost ready to go, just run `main.py`.
 ```bash
 cd teaching-platform

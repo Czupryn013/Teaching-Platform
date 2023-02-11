@@ -37,7 +37,7 @@ def add_user():
         return e.message, e.status
 
     token = generate_confirmation_token(email)
-    send_email(email, "Confirmation Email", f"<a href='http://127.0.0.1:5000/{token}'>Click here to confirm</a>")
+    send_email(email, "Confirmation Email", f"http://127.0.0.1:5000/confirm/{token} Click here to confirm</a>")
 
     return f"Email to {username} has been sent sucessfuly.", 201
 
@@ -130,7 +130,23 @@ def confirm_email(token):
         return e.message, e.status
 
     if user.role != Role.UNCOMFIRMED:
+        logging.info("Account already confirmed.")
         return "Account already confirmed.", 200
     else:
         db_handler.update_role(Role.STUDENT, user.id)
+        logging.info("Account sucesfuly confirmed.")
         return "Account sucesfuly confirmed.", 200
+
+@user_controller_bp.route('/confirm', methods=["GET"])
+@auth.login_required()
+def reconfirm_email():
+    user = auth.current_user()
+
+    if user.role != Role.UNCOMFIRMED:
+        logging.info("Account already confirmed.")
+        return "Account already confirmed.", 200
+
+    token = generate_confirmation_token(user.email)
+    send_email(user.email, "Confirmation Email", f"http://127.0.0.1:5000/confirm/{token} Click here to confirm</a>")
+
+    return f"Confirmation email to {user.username} has been resent sucessfuly.", 201

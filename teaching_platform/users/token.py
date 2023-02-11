@@ -1,13 +1,11 @@
 import os
+import smtplib
 
 from dotenv import load_dotenv
 from itsdangerous import URLSafeTimedSerializer
-from flask_mail import Message
-
-from teaching_platform.extensions import mail
 
 load_dotenv()
-secret_key, salt = os.getenv("secret_key"),os.getenv("salt")
+secret_key, salt, email_pwd, email_login = os.getenv("secret_key"),os.getenv("salt"),os.getenv("email_password"), os.getenv("email_login")
 
 
 def generate_confirmation_token(email):
@@ -22,6 +20,16 @@ def confirm_token(token, expiration=3600):
 
     return email
 
-def send_email(to, subject, html):
-    msg = Message(subject, html=html, recipients=[to], sender="CryptoCharts09@gmail.com")
-    mail.send(msg)
+def send_email(to, subject, body):
+    SMTP_SERVER = "smtp-mail.outlook.com"
+    SMTP_PORT = 587
+
+    message = "From: {}\nTo: {}\nSubject: {}\n\n{}".format(email_login, to, subject, body)
+
+    server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+    server.ehlo()
+    server.starttls()
+    server.ehlo()
+    server.login(email_login, email_pwd)
+    server.sendmail(email_login, [to], message)
+    server.quit()
