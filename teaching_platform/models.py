@@ -6,6 +6,7 @@ from teaching_platform.extensions import db
 class Role(Enum):
     STUDENT = "STUDENT"
     TEACHER = "TEACHER"
+    UNCOMFIRMED = "UNCOMFIRMED"
     ADMIN = "ADMIN"
 
     def __repr__(self):
@@ -16,6 +17,7 @@ class User(db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(20), unique=True, nullable= False)
+    email = db.Column(db.String(100), unique=True, nullable= False)
     password = db.Column(db.String(),nullable= False)
     role = db.Column(db.Enum(Role),nullable= False)
 
@@ -33,6 +35,7 @@ class User(db.Model):
 
 
 def get_all_roles():
+    print([role.value for role in Role])
     return [role.value for role in Role]
 
 

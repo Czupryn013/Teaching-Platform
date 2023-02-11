@@ -21,6 +21,11 @@ class UsernameTakenError(UserCredentialsError):
     def __init__(self):
         self.message = "Username alreday taken, pick a diffrent one."
         self.status = 409
+
+class EmailTakenError(UserCredentialsError):
+    def __init__(self):
+        self.message = "Email alreday regisered, use a diffrent one."
+        self.status = 409
         
 
 class PasswordToWeakError(UserCredentialsError):

@@ -18,7 +18,8 @@ Then use pip to install all dependencies.
 ```bash
 pip install .
 ```
-
+In the main directory create `.env` file and put inside: `db_password`
+and `secret_key`, `salt` for creating tokens.
 After that you are almost ready to go, just run `main.py`.
 ```bash
 cd teaching-platform

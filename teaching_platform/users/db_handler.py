@@ -8,14 +8,17 @@ from teaching_platform.users import exceptions
 from teaching_platform import validation
 
 
-def add_user(username, password):
+def add_user(username, password, email):
     validation.validate_username(username)
     encoded_password = validation.validate_password(password)
 
-    user = User(username=username, password=encoded_password, role=Role.STUDENT)
+    user = User(username=username, password=encoded_password, email=email, role=Role.UNCOMFIRMED)
 
     results = User.query.filter_by(username=username).all()
+    results2 = User.query.filter_by(email=email).all()
     if results: raise exceptions.UsernameTakenError()
+    if results2: raise exceptions.EmailTakenError()
+
 
     db.session.add(user)
     db.session.commit()
@@ -41,6 +44,13 @@ def get_all_users():
 
 def get_user(user_id):
     user = User.query.filter_by(id=user_id).first()
+
+    if not user: raise exceptions.UserDosentExistError()
+
+    return user
+
+def get_user_by_email(email):
+    user = User.query.filter_by(email=email).first()
 
     if not user: raise exceptions.UserDosentExistError()
 

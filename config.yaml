@@ -3,7 +3,6 @@ database:
   user: "postgres"
   dbname: "teaching-platform"
   port: 5432
-  password: "-"
 password:
   length: 5
   uppercase: 1
