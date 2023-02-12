@@ -16,6 +16,7 @@ def generate_confirmation_token(email):
 def confirm_token(token, expiration=3600):
     serializer = URLSafeTimedSerializer(secret_key)
     email = serializer.loads(token,salt=salt,max_age=expiration)
+    print(email)
     if not email: return False
 
     return email

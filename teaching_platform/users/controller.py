@@ -37,7 +37,7 @@ def add_user():
         return e.message, e.status
 
     token = generate_confirmation_token(email)
-    send_email(email, "Confirmation Email", f"http://127.0.0.1:5000/confirm/{token} Click here to confirm</a>")
+    send_email(email, f"Confirmation Email for {username}", f"Click here to confirm! -> http://127.0.0.1:5000/confirm/{token}")
 
     return f"Email to {username} has been sent sucessfuly.", 201
 
@@ -124,10 +124,11 @@ def update_my_info():
 def confirm_email(token):
     email = confirm_token(token)
 
-    try:
-        user = db_handler.get_user_by_email(email)
-    except exceptions.UserDosentExistError as e:
-        return e.message, e.status
+    user = auth.current_user()
+
+    if user.email != email:
+        logging.info("Authorization failure.")
+        return "Authorization failure.", 401
 
     if user.role != Role.UNCOMFIRMED:
         logging.info("Account already confirmed.")
@@ -139,7 +140,7 @@ def confirm_email(token):
 
 @user_controller_bp.route('/confirm', methods=["GET"])
 @auth.login_required()
-def reconfirm_email():
+def resend_confirmation_email():
     user = auth.current_user()
 
     if user.role != Role.UNCOMFIRMED:
@@ -147,6 +148,8 @@ def reconfirm_email():
         return "Account already confirmed.", 200
 
     token = generate_confirmation_token(user.email)
-    send_email(user.email, "Confirmation Email", f"http://127.0.0.1:5000/confirm/{token} Click here to confirm</a>")
+    send_email(user.email, f"Confirmation Email for {user.username}", f"Click here to confirm! -> http://127.0.0.1:5000/confirm/{token}")
 
-    return f"Confirmation email to {user.username} has been resent sucessfuly.", 201
+    logging.info(f"Confirmation email to {user.username} has been resend sucessfuly.")
+
+    return f"Confirmation email to {user.username} has been resend sucessfuly.", 201
