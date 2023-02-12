@@ -119,6 +119,35 @@ def update_my_info():
 
     return "Patched sucesfully!", 200
 
+@user_controller_bp.route("/users/password", methods=["GET"])
+@auth.login_required(role=[Role.ADMIN, Role.TEACHER, Role.STUDENT])
+def reset_password():
+    user = auth.current_user()
+
+    token = generate_confirmation_token(user.email)
+    send_email(user.email, f"Reset Password Email for {user.username}",
+               f"Click here to reset your password! -> http://127.0.0.1:5000/users/password/{token}")
+
+    return f"Reset password email to {user.username} has been sent sucessfuly.", 201
+
+
+@user_controller_bp.route("/users/password/<token>", methods=["POST"])
+def confirm_reset_password(token):
+    request_data, email = request.get_json(),confirm_token(token)
+
+    new_password = request_data.get("new_password")
+    if not new_password: return "Incorrect json body", 400
+    user = db_handler.get_user_by_email(email)
+
+
+    try:
+        db_handler.update_password(new_password, user.id)
+    except exceptions.UserDosentExistError as e:
+        return e.message, e.status
+
+    return "Password has been changed sucesfully!", 200
+
+
 @user_controller_bp.route('/confirm/<token>', methods=["GET"])
 @auth.login_required()
 def confirm_email(token):
