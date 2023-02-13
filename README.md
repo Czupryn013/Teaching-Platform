@@ -9,8 +9,8 @@ After pulling the code onto your machine, start  off by creating a
 Then create a `Python Virtual Enviroment`.
 
 ```bash
-python3 -m venv ".env"
-source ".env/bin/activate" / source ".env/Scripts/activate"
+python3 -m venv ".venv"
+source ".venv/bin/activate" / source ".venv/Scripts/activate"
 ```
 
 
@@ -31,7 +31,7 @@ salt = "SALT"
 
 After that you are almost ready to go, just run `main.py`.
 ```bash
-cd teaching-platform
+cd tp_models
 python3 main.py / python main.py
 ```
 App runs on `http://127.0.0.1:5000` by default, to change it set attribute
