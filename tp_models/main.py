@@ -6,10 +6,10 @@ import jsonpickle
 from dotenv import load_dotenv
 from flask import Flask
 
-from teaching_platform.users.controller import user_controller_bp
-from teaching_platform.lessons.controller import lesson_controller_bp
-from teaching_platform.projects.controller import project_controller_bp
-from teaching_platform.extensions import db, mail
+from tp_models.users.controller import user_controller_bp
+from tp_models.lessons.controller import lesson_controller_bp
+from tp_models.projects.controller import project_controller_bp
+from tp_models.extensions import db, mail
 
 load_dotenv()
 with open("../config.yaml", "r") as f:

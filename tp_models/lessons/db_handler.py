@@ -1,8 +1,8 @@
 import logging
 
-from teaching_platform.lessons import exceptions
-from teaching_platform.models import User, Role, Lesson
-from teaching_platform.extensions import db
+from tp_models.lessons import exceptions
+from tp_models.models import User, Role, Lesson
+from tp_models.extensions import db
 
 
 def add_lesson(teacher_id, info):

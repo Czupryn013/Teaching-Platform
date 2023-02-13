@@ -1,6 +1,6 @@
 from enum import Enum
 
-from teaching_platform.extensions import db
+from tp_models.extensions import db
 
 
 class Role(Enum):
@@ -35,7 +35,6 @@ class User(db.Model):
 
 
 def get_all_roles():
-    print([role.value for role in Role])
     return [role.value for role in Role]
 
 

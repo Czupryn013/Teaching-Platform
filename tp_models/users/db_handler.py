@@ -2,10 +2,10 @@ import logging
 
 from werkzeug.security import check_password_hash
 
-from teaching_platform.models import User, Role
-from teaching_platform.extensions import db
-from teaching_platform.users import exceptions
-from teaching_platform import validation
+from tp_models.models import User, Role
+from tp_models.extensions import db
+from tp_models.users import exceptions
+from tp_models import validation
 
 
 def add_user(username, password, email):
@@ -51,7 +51,6 @@ def get_user(user_id):
 
 def get_user_by_email(email):
     user = User.query.filter_by(email=email).first()
-
     if not user: raise exceptions.UserDosentExistError()
 
     return user

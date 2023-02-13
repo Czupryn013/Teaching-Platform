@@ -2,10 +2,10 @@ import logging
 
 from flask import Blueprint, request
 
-from teaching_platform.extensions import auth
-from teaching_platform.models import Role, get_all_roles
-from teaching_platform.users import db_handler, exceptions
-from teaching_platform.users.token import confirm_token, generate_confirmation_token, send_email
+from tp_models.extensions import auth
+from tp_models.models import Role, get_all_roles
+from tp_models.users import db_handler, exceptions
+from tp_models.users.token import confirm_token, generate_confirmation_token, send_email
 
 user_controller_bp = Blueprint("user_controller_bp", __name__)
 
@@ -28,7 +28,7 @@ def add_user():
     request_data = request.get_json()
     username, password, email = request_data.get("username"), request_data.get("password"), request_data.get("email")
 
-    if not username or not password or not email: return "Incorrect json body", 400
+    if not all((username, password, email)): return "Incorrect json body", 400
 
     try:
         db_handler.add_user(username, password, email)
@@ -135,8 +135,7 @@ def reset_password():
     send_email(user.email, f"Reset Password Email for {user.username}",
                f"Click here to reset your password! -> http://127.0.0.1:5000/users/password/{token}")
 
-    return f"Reset password email to {user.username} has been sent sucessfuly.", 201
-
+    return f"Reset password email to {user.username} has been sent sucessfully.", 201
 
 @user_controller_bp.route("/users/password/<token>", methods=["POST"])
 def confirm_reset_password(token):
@@ -156,7 +155,6 @@ def confirm_reset_password(token):
         return e.message, e.status
 
     return "Password has been changed sucesfully!", 200
-
 
 @user_controller_bp.route('/users/confirm/<token>', methods=["GET"])
 @auth.login_required()

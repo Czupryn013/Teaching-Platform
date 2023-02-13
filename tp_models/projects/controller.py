@@ -2,10 +2,10 @@ import logging
 
 from flask import Blueprint, request
 
-from teaching_platform.extensions import auth
-from teaching_platform.models import Role
-from teaching_platform.projects import db_handler, exceptions
-from teaching_platform import validation
+from tp_models.extensions import auth
+from tp_models.models import Role
+from tp_models.projects import db_handler, exceptions
+from tp_models import validation
 
 project_controller_bp = Blueprint("project_controller_bp", __name__)
 
