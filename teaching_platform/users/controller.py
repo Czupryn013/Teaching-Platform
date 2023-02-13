@@ -119,10 +119,17 @@ def update_my_info():
 
     return "Patched sucesfully!", 200
 
-@user_controller_bp.route("/users/password", methods=["GET"])
-@auth.login_required(role=[Role.ADMIN, Role.TEACHER, Role.STUDENT])
+@user_controller_bp.route("/users/password", methods=["POST"])
 def reset_password():
-    user = auth.current_user()
+    request_data = request.get_json()
+    email = request_data.get("email")
+    if not email: return "Incorrect json body", 400
+
+    try:
+        user = db_handler.get_user_by_email(email)
+    except exceptions.UserDosentExistError as e:
+        return e.message, e.status
+
 
     token = generate_confirmation_token(user.email)
     send_email(user.email, f"Reset Password Email for {user.username}",
@@ -137,7 +144,10 @@ def confirm_reset_password(token):
 
     new_password = request_data.get("new_password")
     if not new_password: return "Incorrect json body", 400
-    user = db_handler.get_user_by_email(email)
+    try:
+        user = db_handler.get_user_by_email(email)
+    except exceptions.UserDosentExistError as e:
+        return e.message, e.status
 
 
     try:
@@ -148,7 +158,7 @@ def confirm_reset_password(token):
     return "Password has been changed sucesfully!", 200
 
 
-@user_controller_bp.route('/confirm/<token>', methods=["GET"])
+@user_controller_bp.route('/users/confirm/<token>', methods=["GET"])
 @auth.login_required()
 def confirm_email(token):
     email = confirm_token(token)
@@ -167,7 +177,7 @@ def confirm_email(token):
         logging.info("Account sucesfuly confirmed.")
         return "Account sucesfuly confirmed.", 200
 
-@user_controller_bp.route('/confirm', methods=["GET"])
+@user_controller_bp.route('/users/confirm', methods=["GET"])
 @auth.login_required()
 def resend_confirmation_email():
     user = auth.current_user()
@@ -177,7 +187,7 @@ def resend_confirmation_email():
         return "Account already confirmed.", 200
 
     token = generate_confirmation_token(user.email)
-    send_email(user.email, f"Confirmation Email for {user.username}", f"Click here to confirm! -> http://127.0.0.1:5000/confirm/{token}")
+    send_email(user.email, f"Confirmation Email for {user.username}", f"Click here to confirm! -> http://127.0.0.1:5000/users/confirm/{token}")
 
     logging.info(f"Confirmation email to {user.username} has been resend sucessfuly.")
 

@@ -47,8 +47,13 @@ Users:
 * `/users`  - **[GET]**
 * `/users/me` - **[GET]**
 * `/users/<user_id>` - **[GET]**
-* `/users/remove<user_id>` - **[DELETE]**
+* `/users/remove/<user_id>` - **[DELETE]**
 * `/users` - **[POST]**
+* `/users/password` - **[PATCH]**
+* `/users/password/<token>` - **[POST]**
+* `/users/password` - **[POST]**
+* `/users/confirm/<token>` - **[GET]**
+* `/users/confirm` - **[GET]**
 
 Lessons:
 * `/lessons`  - **[GET]**
@@ -110,6 +115,21 @@ follow this template:
         "password" : "PASSWORD"
     }
     ```
+* **[GET]** `/users/confirm/<token>` - Requires being logged to an
+account with `email` to which confirmation link was sent. After logging
+in with correct credentials, `Role` will be set to `STUDENT` if it
+was `UNCOMFIRMED` before. Otherwise, nothing will change.
+* **[GET]** `/users/confirm` - Requires being logged in. Resends
+confirmation email if `Role` is `UNCOMFIRMED`.
+* **[POST]** `/users/password` - Doesn't require being logged in.
+In body pass `email` to which reset link should be sent. `email`
+must be email of an actual user.
+* **[POST]** `/users/password/<token>` - Doesn't require being logged in.
+In body pass `new_password`, password will be changed to 
+this value, if it meets all the requirments. Password will be changed
+for user with `email` that is coresponding to hashed `<token>` in the
+url.
+
 **Lessons:**
 * **[GET]** `/lessons` - Requires being logged in, returns all lessons.
 * **[GET]** `/lessons/<lesson_id>` - Requires being logged in, returns 
