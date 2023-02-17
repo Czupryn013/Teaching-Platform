@@ -3,8 +3,8 @@
 from distutils.core import setup
 from setuptools import find_packages
 
-setup(name="teaching_platform",
+setup(name="tp_chat",
       version="0.1.0",
       packages=find_packages(),
-      install_requires = ["pyyaml", "flask", "jsonpickle","python-dotenv"]
+      install_requires=[]
       )

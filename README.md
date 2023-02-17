@@ -14,8 +14,12 @@ source ".venv/bin/activate" / source ".venv/Scripts/activate"
 ```
 
 
-Then use pip to install all dependencies.
+Then use pip to install all dependencies. You need to create both
+`teaching_platform` and `tp_models`.
 ```bash
+cd tp_models
+pip install .
+cd ../
 pip install .
 ```
 In the main directory create `.env` file like in example below and fill
