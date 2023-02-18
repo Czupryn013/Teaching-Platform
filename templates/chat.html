@@ -8,10 +8,12 @@
 </head>
 <body>
 <script type="text/javascript">
+    username = "{{username}}"
+
     $(document).ready(function() {
         var socket = io.connect("http://127.0.0.1:5000")
         socket.on('connect', function() {
-            socket.send("User connected.");
+            socket.send("User {{username}} connected.");
         });
 
         socket.on('message', function(msg) {
@@ -19,8 +21,7 @@
         });
 
         $('#sendBtn').on('click', function() {
-            console.log('here')
-            socket.send($('#username').val() + ': ' + $('#message').val());
+            socket.send(username + ': ' + $('#message').val());
             $('#message').val("");
         });
     });
@@ -30,8 +31,8 @@
 
 </div>
 
-<input type="text" id="username" placeholder="username">
 <input type="text" id="message" placeholder="message">
+<p>Username: {{username}}</p>
 <button id="sendBtn">Send</button>
 </body>
 </html>

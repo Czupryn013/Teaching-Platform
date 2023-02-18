@@ -9,7 +9,8 @@ from flask import Flask
 from tp_models.users.controller import user_controller_bp
 from tp_models.lessons.controller import lesson_controller_bp
 from tp_models.projects.controller import project_controller_bp
-from tp_chat.handler import chat_controller_bp
+from tp_chat.controller import chat_controller_bp
+import tp_chat.handler
 from tp_models.extensions import db
 from tp_chat.extensions import socket
 
