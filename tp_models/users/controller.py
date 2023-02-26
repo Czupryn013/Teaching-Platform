@@ -1,4 +1,5 @@
 import logging
+import smtplib
 
 from flask import Blueprint, request
 
@@ -37,7 +38,10 @@ def add_user():
         return e.message, e.status
 
     token = generate_confirmation_token(email)
-    send_email(email, f"Confirmation Email for {username}", f"Click here to confirm! -> http://127.0.0.1:5000/users/confirm/{token}")
+    try:
+        send_email(email, f"Confirmation Email for {username}", f"Click here to confirm! -> http://127.0.0.1:5000/users/confirm/{token}")
+    except smtplib.SMTPAuthenticationError:
+        return "Failed to send an verification e-mail. Incorrect logging data.", 400
 
     return f"Email to {username} has been sent sucessfuly.", 201
 
