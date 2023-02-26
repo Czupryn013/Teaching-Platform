@@ -2,10 +2,10 @@ import logging
 
 from werkzeug.security import check_password_hash
 
-from tp_models.models import User, Role
-from tp_models.extensions import db
-from tp_models.users import exceptions
-from tp_models import validation
+from teaching_platform.models.models import User, Role
+from teaching_platform.models.extensions import db
+from teaching_platform.models.users import exceptions
+from teaching_platform.models import validation
 
 
 def add_user(username, password, email):

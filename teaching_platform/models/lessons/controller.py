@@ -2,10 +2,10 @@ import logging
 
 from flask import Blueprint, request
 
-from tp_models.extensions import auth
-from tp_models.models import Role
-from tp_models.lessons import db_handler, exceptions
-from tp_models import validation
+from teaching_platform.models.extensions import auth
+from teaching_platform.models.models import Role
+from teaching_platform.models.lessons import db_handler, exceptions
+from teaching_platform.models import validation
 lesson_controller_bp = Blueprint("lesson_controller_bp", __name__)
 
 @lesson_controller_bp.route("/lessons", methods=["POST"])

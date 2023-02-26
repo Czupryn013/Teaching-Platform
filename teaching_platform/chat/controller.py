@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template
 
-from tp_models.extensions import auth
-from tp_models.models import User, Role
+from teaching_platform.models.extensions import auth
 
 chat_controller_bp = Blueprint("chat_controller_bp", __name__)
 

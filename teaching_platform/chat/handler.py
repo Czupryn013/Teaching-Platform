@@ -1,6 +1,6 @@
 import logging
 
-from tp_chat.extensions import socket
+from teaching_platform.chat.extensions import socket
 
 from flask_socketio import send
 

@@ -6,13 +6,12 @@ import jsonpickle
 from dotenv import load_dotenv
 from flask import Flask
 
-from tp_models.users.controller import user_controller_bp
-from tp_models.lessons.controller import lesson_controller_bp
-from tp_models.projects.controller import project_controller_bp
-from tp_chat.controller import chat_controller_bp
-import tp_chat.handler
-from tp_models.extensions import db
-from tp_chat.extensions import socket
+from teaching_platform.models.users.controller import user_controller_bp
+from teaching_platform.models.lessons.controller import lesson_controller_bp
+from teaching_platform.models.projects.controller import project_controller_bp
+from teaching_platform.chat.controller import chat_controller_bp
+from teaching_platform.models.extensions import db
+from teaching_platform.chat.extensions import socket
 
 load_dotenv()
 with open("config.yaml", "r") as f:
@@ -20,7 +19,7 @@ with open("config.yaml", "r") as f:
 db_config, log_config = config["database"], config["logging"]
 db_password, secret_key = os.getenv("db_password") ,os.getenv("secret_key")
 
-logging.basicConfig(level=log_config["logging_lvl"], filemode="w", filename="logs.log")
+logging.basicConfig(level=log_config["logging_lvl"], filemode="w", filename="../logs.log")
 jsonpickle.set_preferred_backend('json')
 jsonpickle.set_encoder_options('json', ensure_ascii=False)
 

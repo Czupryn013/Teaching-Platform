@@ -2,11 +2,10 @@ import yaml
 from password_strength import PasswordPolicy
 from werkzeug.security import generate_password_hash
 
-from tp_models.users import exceptions
-from tp_models.users import db_handler as user_dbh
-from tp_models.lessons import db_handler as lesson_dbh
-from tp_models.projects import db_handler as project_dbh
-from tp_models.models import Role
+from teaching_platform.models.users import db_handler as user_dbh, exceptions
+from teaching_platform.models.lessons import db_handler as lesson_dbh
+from teaching_platform.models.projects import db_handler as project_dbh
+from teaching_platform.models.models import Role
 
 with open("./config.yaml", "r") as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
