@@ -7,7 +7,7 @@ from teaching_platform.models.lessons import db_handler as lesson_dbh
 from teaching_platform.models.projects import db_handler as project_dbh
 from teaching_platform.models.models import Role
 
-with open("./config.yaml", "r") as f:
+with open("config.yaml", "r") as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
 pwd_config = config["password"]
 
