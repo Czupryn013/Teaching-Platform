@@ -1,8 +1,8 @@
 import logging
 
-from tp_models.projects import exceptions
-from tp_models.models import User, Role, Project
-from tp_models.extensions import db
+from teaching_platform.models.projects import exceptions
+from teaching_platform.models.models import User, Role, Project
+from teaching_platform.models.extensions import db
 
 def add_project(name, mentor_id, status="In development."):
     mentor = User.query.filter_by(id=mentor_id, role=Role.TEACHER).first()

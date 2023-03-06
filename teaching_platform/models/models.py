@@ -1,6 +1,6 @@
 from enum import Enum
 
-from tp_models.extensions import db
+from teaching_platform.models.extensions import db
 
 
 class Role(Enum):

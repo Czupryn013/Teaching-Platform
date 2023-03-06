@@ -2,10 +2,10 @@ import logging
 
 from werkzeug.security import check_password_hash
 
-from tp_models.models import User, Role
-from tp_models.extensions import db
-from tp_models.users import exceptions
-from tp_models import validation
+from teaching_platform.models.models import User, Role, get_all_roles
+from teaching_platform.models.extensions import db
+from teaching_platform.models.users import exceptions
+from teaching_platform.models import validation
 
 
 def add_user(username, password, email):
@@ -44,7 +44,6 @@ def get_all_users():
 
 def get_user(user_id):
     user = User.query.filter_by(id=user_id).first()
-
     if not user: raise exceptions.UserDosentExistError()
 
     return user
@@ -74,6 +73,9 @@ def update_username(username, id):
 def update_role(role, id):
     user = User.query.filter_by(id=id).first()
     if not user: raise exceptions.UserDosentExistError()
+
+    if role not in get_all_roles(): raise exceptions.IncorrectRoleError()
+
 
     user.role = role
     db.session.commit()

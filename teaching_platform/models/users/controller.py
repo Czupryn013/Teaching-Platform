@@ -1,11 +1,12 @@
 import logging
+import smtplib
 
 from flask import Blueprint, request
 
-from tp_models.extensions import auth
-from tp_models.models import Role, get_all_roles
-from tp_models.users import db_handler, exceptions
-from tp_models.users.token import confirm_token, generate_confirmation_token, send_email
+from teaching_platform.models.extensions import auth
+from teaching_platform.models.models import Role, get_all_roles
+from teaching_platform.models.users import db_handler, exceptions
+from teaching_platform.models.users.token import confirm_token, generate_confirmation_token, send_email
 
 user_controller_bp = Blueprint("user_controller_bp", __name__)
 
@@ -37,7 +38,10 @@ def add_user():
         return e.message, e.status
 
     token = generate_confirmation_token(email)
-    send_email(email, f"Confirmation Email for {username}", f"Click here to confirm! -> http://127.0.0.1:5000/confirm/{token}")
+    try:
+        send_email(email, f"Confirmation Email for {username}", f"Click here to confirm! -> http://127.0.0.1:5000/users/confirm/{token}")
+    except smtplib.SMTPAuthenticationError:
+        return "Failed to send an verification e-mail. Incorrect logging data.", 400
 
     return f"Email to {username} has been sent sucessfuly.", 201
 

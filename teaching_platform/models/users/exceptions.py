@@ -56,6 +56,15 @@ class AuthError(Exception):
         return f"Error: {self.message} Status: {self.status}"
 
 
+class IncorrectRoleError(Exception):
+    def __init__(self):
+        self.message = "Incorrect role value passed"
+        self.status = 400
+
+    def __str__(self):
+        return f"Error: {self.message} Status: {self.status}"
+
+
 
 
 
